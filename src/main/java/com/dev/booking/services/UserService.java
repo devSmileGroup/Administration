@@ -1,5 +1,6 @@
 package com.dev.booking.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -13,40 +14,54 @@ import com.dev.booking.repositories.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	@Autowired
-    private UserRepository userRepository;
-	
-	public Iterable<User>getAll() {
-		return userRepository.findAll();
+	private UserRepository userRepository;
+
+	public Iterable<User> getAll() {
+		List<User> listUser = (List<User>) userRepository.findAll();
+		if(!listUser.isEmpty()) {
+			return listUser;
+		}
+		return null;
 	}
-	
+
 	public User save(@RequestBody User user) {
-    	userRepository.save(user);
-        return user;
-    }
-	
-	public User show(@PathVariable ObjectId id) {
-        Optional<User> showedUser = userRepository.findById(id);
-        return showedUser.get();
+		userRepository.save(user);
+		return user;
 	}
-	
+
+	public User read(@PathVariable ObjectId id) {
+		Optional<User> optionalUser = userRepository.findById(id);
+		if(optionalUser.isPresent()) {
+			return optionalUser.get();
+		}
+		return null;
+	}
+
 	public User update(@PathVariable ObjectId id, @RequestBody User user) {
-        User updatedUser = userRepository.findById(id).get();
-            updatedUser.setEmail(user.getEmail());        
-            updatedUser.setFirstName(user.getFirstName());       
-            updatedUser.setLastName(user.getLastName());
-            updatedUser.setLogin(user.getLogin());
-            updatedUser.setPassword(user.getPassword());
-            updatedUser.setRole(user.getRole());
-        userRepository.save(updatedUser);
-        return updatedUser;
-    }
-	
+		Optional<User> optionalUser = userRepository.findById(id);
+		if(optionalUser.isPresent()) {
+			User updatedUser = optionalUser.get();
+			updatedUser.setEmail(user.getEmail());
+			updatedUser.setFirstName(user.getFirstName());
+			updatedUser.setLastName(user.getLastName());
+			updatedUser.setLogin(user.getLogin());
+			updatedUser.setPassword(user.getPassword());
+			updatedUser.setRole(user.getRole());
+			userRepository.save(updatedUser);
+			return updatedUser;
+		}
+		return null;
+	}
+
 	public String delete(@PathVariable ObjectId id) {
-        User deletedUser = userRepository.findById(id).get();
-        userRepository.delete(deletedUser);
-        return "user deleted";
-    }
+		Optional<User> optionalUser = userRepository.findById(id);
+		if(optionalUser.isPresent()) {
+			userRepository.delete(optionalUser.get());
+			return "user deleted";
+		}
+		return "user not found";
+	}
 
 }
