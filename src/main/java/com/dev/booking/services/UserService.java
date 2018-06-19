@@ -33,7 +33,7 @@ public class UserService {
 
 	public User read(@PathVariable ObjectId id) {
 		Optional<User> optionalUser = userRepository.findById(id);
-		if(optionalUser.isPresent()) {
+		if (optionalUser.isPresent()) {
 			return optionalUser.get();
 		}
 		return null;
@@ -55,13 +55,8 @@ public class UserService {
 		return null;
 	}
 
-	public String delete(@PathVariable ObjectId id) {
-		Optional<User> optionalUser = userRepository.findById(id);
-		if(optionalUser.isPresent()) {
-			userRepository.delete(optionalUser.get());
-			return "user deleted";
-		}
-		return "user not found";
+	public void delete(@PathVariable ObjectId id) {
+		userRepository.deleteById(id);
 	}
 
 }
